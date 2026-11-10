@@ -21,12 +21,17 @@ jobs:
 
       - name: Install iOS SDK (theos/sdks)
         run: |
-          git clone -n --depth=1 --filter=tree:0 https://github.com/theos/sdks.git /tmp/sdks
+          set -euo pipefail
+          SDK_NAME="iPhoneOS15.6.sdk"
+          git clone -n --depth=1 --filter=tree:0 --branch master \
+            https://github.com/theos/sdks.git /tmp/sdks
           cd /tmp/sdks
-          git sparse-checkout set --no-cone iPhoneOS15.5.sdk
-          git checkout
+          git sparse-checkout set --no-cone "$SDK_NAME"
+          git checkout master
+          test -d "$SDK_NAME" || { echo "SDK $SDK_NAME not found after checkout"; ls; exit 1; }
           sudo mkdir -p "$THEOS/sdks"
-          sudo mv iPhoneOS15.5.sdk "$THEOS/sdks/"
+          sudo mv "$SDK_NAME" "$THEOS/sdks/"
+          ls "$THEOS/sdks"
 
       - name: Install ldid
         run: |
@@ -38,8 +43,7 @@ jobs:
         run: |
           export THEOS=/opt/theos
           export THEOS_DEVICE_IP=
-          make clean package FINALPACKAGE=1 \
-            TARGET=iphone:clang:15.5:15.0
+          make clean package FINALPACKAGE=1
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
