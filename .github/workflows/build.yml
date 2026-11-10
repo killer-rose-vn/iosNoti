@@ -35,6 +35,9 @@ jobs:
           test -d "$SDK_NAME" || { echo "SDK $SDK_NAME not found after checkout"; ls; exit 1; }
           sudo mkdir -p "$THEOS/sdks"
           sudo mv "$SDK_NAME" "$THEOS/sdks/"
+          # Theos resolve TARGET=...:latest:... bằng cách tìm SDK mới nhất trong
+          # $THEOS/sdks theo tên; không cần symlink thêm, nhưng ta ép rõ version
+          # ở bước build để không phụ thuộc "latest" tính sai.
           ls "$THEOS/sdks"
 
       - name: Install ldid
@@ -49,7 +52,10 @@ jobs:
           echo "THEOS=$THEOS"
           ls -la "$THEOS/sdks"
           export THEOS_DEVICE_IP=
-          make clean package FINALPACKAGE=1 2>&1
+          # TARGET dùng "latest" không resolve được vì SDK được copy tay (không
+          # qua installer chính thức) -> ép rõ version SDK khớp với bước cài trên.
+          make clean package FINALPACKAGE=1 \
+            TARGET=iphone:clang:15.6:15.0 2>&1
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
