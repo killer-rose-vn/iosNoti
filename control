@@ -1,0 +1,9 @@
+Package: com.iosnoti.pack
+Name: IosNoti
+Version: 1.0.0
+Architecture: iphoneos-arm64
+Description: Bắt thông báo hệ thống trên SpringBoard, ký bằng MD5 và đẩy lên server C#; kèm app quản lý lịch sử + cấu hình.
+Maintainer: ducnm
+Author: ducnm
+Section: Tweaks
+Depends: mobilesubstrate, firmware (>= 15.0)
